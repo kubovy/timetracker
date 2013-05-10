@@ -1,0 +1,62 @@
+
+<%= form_for(@log) do |f| %>
+  <%= f.hidden_field :date, :value => @selected_date.strftime("%Y-%m-%d") %>
+  <% if @log.errors.any? %>
+        <div id="error_explanation" xmlns="http://www.w3.org/1999/html">
+      <h2><%= pluralize(@log.errors.count, "error") %> prohibited this log from being saved:</h2>
+
+      <ul>
+      <% @log.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+<table>
+  <tr>
+    <td><%= f.label :team_id %></td>
+    <td>
+      <%= f.collection_select :team_id, @teams, :id, :name,
+            :value    => @teams.count == 1 ? @teams.first.id : nil,
+            :prompt   => @teams.count == 1 ? nil : '- Select Team -'%>
+    </td>
+    <td rowspan="8" style="vertical-align: top">
+      <%= mini_calendar @selected_date %>
+    </td>
+  </tr>
+  <!--<tr>-->
+    <!--<td><%= f.label :client_id %></td>-->
+    <!--<td><%= f.collection_select :client_id, @clients, :id, :name, :prompt => '-' %></td>-->
+  <!--</tr>-->
+  <tr>
+    <td><%= f.label :project_id %></td>
+    <td><%= f.collection_select :project_id, @projects, :id, :name, :prompt => '- Select Project -' %></td>
+  </tr>
+  <tr>
+    <td><%= f.label :task_id %></td>
+    <td><%= f.collection_select :task_id, @tasks, :id, :name, :prompt => '- Select Task -' %></td>
+  </tr>
+  <tr>
+    <td><%= f.label :start %></td>
+    <td><%= f.text_field :start, :value => @log.start.nil? ? nil : @log.start.strftime("%H:%M") %></td>
+  </tr>
+  <tr>
+    <td><%= f.label :duration %></td>
+    <td><%= f.text_field :duration, :value => @log.duration.nil? ? nil : @log.duration.strftime("%H:%M")  %></td>
+  </tr>
+  <tr>
+    <td><%= f.label :description %></td>
+    <td><%= f.text_area :description %></td>
+  </tr>
+  <tr>
+    <td><%= f.label :billable %></td>
+    <td><%= f.check_box :billable %></td>
+  </tr>
+
+</table>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

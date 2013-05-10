@@ -1,0 +1,24 @@
+<h1>Listing holidays</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th class="buttons"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @holidays.each do |holiday| %>
+      <tr>
+        <!--<td><%= holiday.employer_id %></td>-->
+        <td><%= holiday.date %></td>
+        <td><%= link_to button(:delete), holiday, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to button(:new, 'New Holiday'), new_holiday_path %>

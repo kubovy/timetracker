@@ -1,0 +1,9 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  employer_id: 1
+  name: MyString
+
+two:
+  employer_id: 1
+  name: MyString

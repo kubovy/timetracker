@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  employer_id: 1
+  employee_id: 1
+  day: 1
+  hours: 2013-05-09 09:04:47
+
+two:
+  employer_id: 1
+  employee_id: 1
+  day: 1
+  hours: 2013-05-09 09:04:47

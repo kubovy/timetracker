@@ -1,0 +1,41 @@
+<h1>Listing projects</h1>
+
+<table>
+  <thead>
+    <tr>
+      <!--<th>Employer</th>-->
+      <th>Name</th>
+      <th>Description</th>
+      <th>Owner</th>
+      <th class="buttons"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+  <% @projects.each do |list, projects| %>
+      <% if list == :deleted and projects.count > 0 %>
+        <tr><th colspan="4">Deleted</th></tr>
+      <% end %>
+      <% projects.each do |project| %>
+        <tr>
+          <!--<td><%= project.employer.name %></td>-->
+          <td><%= project.name %></td>
+          <td><%= project.description %></td>
+          <td><%= project.owner.login %></td>
+          <td>
+            <%= link_to button(:edit), edit_project_path(project) %>
+            <% if project.is_deleted? %>
+              <%= link_to button(:restore), project, method: :delete, data: { confirm: 'Are you sure?' } if current_user.is_admin?%>
+            <% else %>
+              <%= link_to button(:delete), project, method: :delete, data: { confirm: 'Are you sure?' } %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to button(:new, 'New Project'), new_project_path %>

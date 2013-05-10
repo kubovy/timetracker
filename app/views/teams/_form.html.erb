@@ -1,0 +1,39 @@
+<%= form_for(@team) do |f| %>
+  <%= f.hidden_field :employer_id, :value => selected_employer_id %>
+  <% if @team.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@team.errors.count, "error") %> prohibited this team from being saved:</h2>
+      <ul>
+      <% @team.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %><br>
+    <%= f.text_field :name %>
+  </div>
+
+    <div class="field">
+      <table>
+        <tr>
+          <th>Employee</th>
+          <th>User</th>
+          <th>Manager</th>
+        </tr>
+        <% @all_users.each do |user| %>
+            <% users = @team.members.map{|e| e.user} %>
+            <tr>
+              <td><%= check_box_tag "team[members][#{user.id}][included]", 1, users.include?(user) %></td>
+              <td><%= user.login %></td>
+            </tr>
+        <% end %>
+      </table>
+    </div>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

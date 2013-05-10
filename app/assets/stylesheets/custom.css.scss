@@ -1,0 +1,131 @@
+@import "bootstrap";
+
+/* mixins, variables, etc. */
+
+$grayMediumLight: #eaeaea;
+
+@mixin box_sizing {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+body > .container a, body > .container a:hover {
+  color: #333333 !important;
+  background: none !important;
+}
+body > .container a:hover {
+  text-decoration: underline;
+}
+
+.alert {
+  position: absolute;
+  right: 0;
+}
+
+/* navigation bar */
+.navbar-fixed-top, .navbar-fixed-bottom {
+  position: relative !important;
+}
+
+.nav-control {
+  bottom: 0;
+  margin-top: -55px;
+  position: relative;
+  right: 0;
+}
+.nav-control form {
+  margin-bottom: 0;
+}
+.nav-control select {
+  width: inherit;
+}
+
+.container {
+  position: relative;
+}
+
+/* tables */
+.container > table {
+  width: 90%;
+  margin: 0 auto;
+  margin-top: 30px;
+}
+
+.container table th {
+  background: #333333;
+  color: #ffffff;
+  text-align: left;
+  padding: 5px 15px;
+}
+
+.container table td {
+  padding: 0px 10px;
+}
+
+.container > table th.buttons {
+  width: 100px;
+  text-align: right;
+}
+
+.container > table > tbody > tr:hover {
+  background: #cccccc;
+}
+
+/* boxes */
+.container > .box {
+  width: 90%;
+  margin: 0 auto;
+  padding: 5px 15px;
+  margin-top: 30px;
+}
+
+/* mini calendar */
+
+.minical {
+  border-spacing: 1px;
+  border-collapse: separate;
+}
+
+.minical .day {
+  text-align: right;
+  padding: 5px;
+}
+
+.minical .title td, .minical .wdays td, .minical .today, .minical .date {
+  text-align: center;
+}
+.minical .title td, .minical .wdays td {
+  font-weight: bold;
+}
+
+.minical .in_month {
+  border: 1px solid #999999;
+}
+
+.minical .weekend, .minical .weekend a,
+.minical .holiday, .minical .holiday a {
+  color: #ccc !important;
+}
+
+.minical .selected {
+  background: #ff6666 !important;
+}
+
+.minical .worked {
+  background: #99ff99;
+}
+.minical .worked a {
+  font-weight: bold;
+  color: #003300 !important;
+}
+
+
+/* miscellaneous */
+.debug_dump {
+  clear: both;
+  float: left;
+  width: 100%;
+  margin-top: 45px;
+  @include box_sizing;
+}

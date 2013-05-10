@@ -1,0 +1,35 @@
+<h1>Listing employers</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th class="buttons"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @employers.each do |list, employers| %>
+      <% if list == :deleted and employers.count > 0 %>
+        <tr><th colspan="2">Deleted</th></tr>
+      <% end %>
+      <% employers.each do |employer| %>
+        <tr>
+          <td><%= employer.name %></td>
+          <td>
+            <%= link_to button(:edit), edit_employer_path(employer) unless employer.is_deleted? %>
+            <% if employer.is_deleted? %>
+                <%= link_to button(:restore), employer, method: :delete, data: { confirm: 'Are you sure?' } if current_user.is_admin? %>
+            <% else %>
+                <%= link_to button(:delete), employer, method: :delete, data: { confirm: 'Are you sure?' } %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to button(:new, 'New Employer'), new_employer_path %>

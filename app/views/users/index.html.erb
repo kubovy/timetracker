@@ -1,0 +1,41 @@
+<h1>Listing users</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Login</th>
+      <th>Email</th>
+      <th>Manager</th>
+      <th>Administrator</th>
+      <th class="buttons"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+  <% @users.each do |list, users| %>
+      <% if list == :deleted and users.count > 0 %>
+          <tr><th colspan="5">Deleted</th></tr>
+      <% end %>
+      <% users.each do |user| %>
+        <tr>
+          <td><%= user.login %></td>
+          <td><%= user.email %></td>
+          <td><%= user.is_manager? ? 'X' : '' %></td>
+          <td><%= user.is_admin? ? 'X' : '' %></td>
+          <td>
+            <%= link_to button(:edit), edit_user_path(user) %>
+            <% if user.is_deleted? %>
+              <%= link_to button(:restore), user, method: :delete, data: { confirm: 'Are you sure?' } if current_user.is_admin?%>
+            <% else %>
+              <%= link_to button(:delete), user, method: :delete, data: { confirm: 'Are you sure?' } %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to button(:new, 'New User'), new_user_path %>

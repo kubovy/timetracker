@@ -1,0 +1,28 @@
+<h1>Time table</h1>
+
+<%= form_tag(timetable_path) do %>
+  <table>
+    <thead>
+      <tr>
+        <th>Day</th>
+        <th>Hours</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% I18n.t('date.day_names').each_index do |i| %>
+        <tr>
+          <td><%= I18n.t('date.day_names')[i] %></td>
+          <td>
+            <% time = @timetable.select{|t| t.day == i}.first %>
+            <%= text_field_tag "timetable[#{i}]", time.nil? ? '' : time.hours.strftime("%H:%M")  %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <div class="actions">
+    <%= submit_tag "Save" %>
+  </div>
+<% end %>

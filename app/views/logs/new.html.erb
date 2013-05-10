@@ -1,0 +1,52 @@
+<h1>My time</h1>
+
+<%= render 'form' %>
+
+<div class="box note">
+  <%= button :week, "Weekly total:" %> <%= @weekly_total %> hours
+</div>
+
+<table>
+  <thead>
+  <tr>
+    <th>Team</th>
+    <!--<th>Client</th>-->
+    <th>Project</th>
+    <th>Task</th>
+    <th>Start</th>
+    <th>Finish</th>
+    <th>Duration</th>
+    <th>Description</th>
+    <th class="buttons"></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @logs.each do |log| %>
+      <tr>
+        <td><%= log.team.nil? ? '' : log.team.name %></td>
+        <!--<td><%= log.client_id %></td>-->
+        <td><%= log.project.name %></td>
+        <td><%= log.task.name %></td>
+        <td><%= log.start.strftime "%H:%M" %></td>
+        <td><%= log.finish.strftime "%H:%M" %></td>
+        <td><%= log.duration.strftime "%H:%M" %></td>
+        <td><%= log.description %></td>
+        <td>
+          <%= link_to button(:edit), edit_log_path(log) %>
+          <%= link_to button(:delete), log, method: :delete, data: { confirm: 'Are you sure?' } %>
+        </td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<div class="box chart">
+  <%= form_tag('', :id => 'switch_graph') do %>
+    <%= button :chart, "Chart for period:" %>
+    <%= select_tag :selected_employer_id,
+        options_for_select([["Day", :day], ["Week", :week], ["Month", :month],
+                            ["Year", :year], ["All time", :all_time]], :day),
+        :onchange => ("$('#switch_graph').submit()") %>
+  <% end %>
+</div>
