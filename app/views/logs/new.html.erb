@@ -3,7 +3,20 @@
 <%= render 'form' %>
 
 <div class="box note">
-  <%= button :week, "Weekly total:" %> <%= @weekly_total %> hours
+  <%= button :day, "Today total:" %> <%= format_time_in_seconds @daily_total %> hours<br/>
+  <%= button :week, "Weekly total:" %> <%= format_time_in_seconds @weekly_total %> / <%= format_time_in_seconds @weekly_todo %> hours<br/>
+  <%= button :month, "Monthly total:" %> <%= format_time_in_seconds @monthly_total %> / <%= format_time_in_seconds @monthly_todo %> hours<br/>
+  <br/>
+  <% if @weekly_total < @weekly_todo %>
+    <%= button :remaining, "Remaining week hours:" %> <%= format_time_in_seconds (@weekly_todo - @weekly_total) %> hours<br/>
+  <% elsif @weekly_total > @weekly_todo %>
+    <%= button :overtime, "Weekly overtime:" %> <%= format_time_in_seconds (@weekly_total - @weekly_todo) %> hours<br/>
+  <% end %>
+  <% if @monthly_total < @monthly_todo %>
+    <%= button :remaining, "Remaining month hours:" %> <%= format_time_in_seconds (@monthly_todo - @monthly_total) %> hours<br/>
+  <% elsif @monthly_total > @monthly_todo %>
+    <%= button :overtime, "Monthly overtime:" %> <%= format_time_in_seconds (@monthly_total - @monthly_todo) %> hours<br/>
+  <% end %>
 </div>
 
 <table>

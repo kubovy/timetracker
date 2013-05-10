@@ -8,22 +8,48 @@ class LogsController < ApplicationController
     @log = Log.new
 		@logs = Log.where :date => @selected_date, :user_id => current_user.id
 
+
     day_diff = (@selected_date.wday - 1 < 0 ? 6 : @selected_date.wday - 1) - 1
     week_begin = Time.at(@selected_date.to_time.to_i - day_diff * 60 * 60 * 24).utc
     week_begin = Time.new(week_begin.year, week_begin.month, week_begin.day, 0, 0, 0).utc
     week_end   = week_begin + 60 * 60 * 24 * 7 - 1
     week = week_begin..week_end
 
+    month_begin = Time.new(@selected_date.year, @selected_date.month, 1, 0, 0, 0)
+    month_end = Time.new(@selected_date.next_month.year, @selected_date.next_month.month, 1, 0, 0, 0) - 1
+    month = month_begin..month_end
+
+    @daily_total = Log.select("(sum(TIME_TO_SEC(`duration`))) as result")
+		    .where(:employer_id => selected_employer_id, :user_id => current_user.id, :date => @selected_date)
+    @daily_total = @daily_total.first[:result].nil? ? 0 : @daily_total.first[:result]
+
     @weekly_total = Log.select("(sum(TIME_TO_SEC(`duration`))) as result")
         .where(:employer_id => selected_employer_id, :user_id => current_user.id, :date => week)
+    @weekly_total = @weekly_total.first[:result].nil? ? 0 : @weekly_total.first[:result]
 
-    unless @weekly_total.first[:result].nil? then
-      hours = (@weekly_total.first[:result] / 3600).floor
-      minutes =  ((@weekly_total.first[:result] - (hours * 3600)) / 60).to_i
-      @weekly_total = "#{hours}:#{minutes}"
-    else
-			@weekly_total = "0:00"
+    @monthly_total = Log.select("(sum(TIME_TO_SEC(`duration`))) as result")
+		    .where(:employer_id => selected_employer_id, :user_id => current_user.id, :date => month)
+    @monthly_total = @monthly_total.first[:result] .nil? ? 0 : @monthly_total.first[:result]
+
+		@timetable = Hash[
+				Timetable.select("day, TIME_TO_SEC(hours) as seconds")
+					.where(:employer_id => selected_employer_id,
+				         :employee_id => current_user.id).map{|t|
+							[t.day, t.seconds / 3600]} ]
+		@holidays = Holiday.where(:employer_id => selected_employer_id).map{|holiday| holiday.date}
+
+		@weekly_todo = 0
+    (0..7).each do |i|
+	    day = week_begin + i * 24 * 3600
+	    @weekly_todo += @timetable[day.wday] * 3600 unless @holidays.include?(day) or @timetable[day.wday].nil?
+    end
+
+    @monthly_todo = 0
+		(0..(month_end.day-1)).each do |i|
+			day = month_begin + i * 24 * 3600
+			@monthly_todo += @timetable[day.wday] * 3600 unless @holidays.include?(day) or @timetable[day.wday].nil?
 		end
+
   end
 
   # GET /logs/1/edit
@@ -71,39 +97,40 @@ class LogsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_log
-      @log ||= params[:id].nil? ? Log.new : Log.find(params[:id])
-    end
 
-		def set_date
-		  cookies.permanent[:selected_date] ||= Date.today.strftime("%Y-%m-%d")
-		  cookies.permanent[:selected_date] = params[:date] unless params[:date].nil?
-			@selected_date = Date.parse cookies[:selected_date]
-		end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_log
+    @log ||= params[:id].nil? ? Log.new : Log.find(params[:id])
+  end
 
-    def set_available_options
-			@teams = Team.where :is_del
+	def set_date
+	  cookies.permanent[:selected_date] ||= Date.today.strftime("%Y-%m-%d")
+	  cookies.permanent[:selected_date] = params[:date] unless params[:date].nil?
+		@selected_date = Date.parse cookies[:selected_date]
+	end
 
-			#t = Team.arel_table
-			#t[:is_deleted].eq(false).or(t[:id].in(current_user.teams.map{|t| t.id}))
-			@teams = Team.joins(:members).where(
-					"`teams`.`employer_id` = ? AND (`teams`.`is_deleted` = false OR `teams`.`id` IN (?)) AND `members`.`user_id` = ?",
-					selected_employer_id, current_user.teams, current_user.id)
+  def set_available_options
+		@teams = Team.where :is_del
 
-			@clients = []
-			@projects = Project.joins("LEFT OUTER JOIN `logs` ON `logs`.`project_id` = `projects`.`id`").where(
-					"`projects`.`employer_id` = ? AND (`projects`.`is_deleted` = false OR `logs`.`project_id` IN (?))",
-					selected_employer_id, set_log.project_id).group("`projects`.`id`")
-			@tasks = Task.all
+		#t = Team.arel_table
+		#t[:is_deleted].eq(false).or(t[:id].in(current_user.teams.map{|t| t.id}))
+		@teams = Team.joins(:members).where(
+				"`teams`.`employer_id` = ? AND (`teams`.`is_deleted` = false OR `teams`.`id` IN (?)) AND `members`.`user_id` = ?",
+				selected_employer_id, current_user.teams, current_user.id)
 
-    end
+		@clients = []
+		@projects = Project.joins("LEFT OUTER JOIN `logs` ON `logs`.`project_id` = `projects`.`id`").where(
+				"`projects`.`employer_id` = ? AND (`projects`.`is_deleted` = false OR `logs`.`project_id` IN (?))",
+				selected_employer_id, set_log.project_id).group("`projects`.`id`")
+		@tasks = Task.all
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def log_params
-      params.require(:log).permit(:date, :team_id, :client_id, :project_id,
-          :task_id, :start, :duration, :description, :billable).merge({
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def log_params
+    params.require(:log).permit(:date, :team_id, :client_id, :project_id,
+        :task_id, :start, :duration, :description, :billable).merge({
 		    :employer_id => selected_employer_id,
-		    :user_id => current_user.id })
-    end
+        :user_id => current_user.id })
+  end
+
 end
