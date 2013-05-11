@@ -28,7 +28,17 @@
         <tr>
           <td><%= check_box_tag "employer[employees][#{user.id}][included]", 1, users.include?(user) %></td>
           <td><%= user.login %></td>
-          <td><%= check_box_tag "employer[employees][#{user.id}][manager]", 1, users.include?(user) ? @employer.employees.map{|e| e.user == user ? e : nil}.compact.first.is_manager? : false %></td>
+          <td>
+            <%= check_box_tag "employer[employees][#{user.id}][manager]", 1,
+                (users.include?(user) ? @employer.employees.map{ |e|
+                  e.user == user ? e : nil }.compact.first.is_manager? : false),
+                :disabled => user == current_user %>
+            <% if user == current_user %>
+                <%= hidden_field_tag "employer[employees][#{user.id}][manager]",
+                    (users.include?(user) ? @employer.employees.map{ |e|
+                        e.user == user ? e : nil }.compact.first.is_manager? : false) %>
+            <% end %>
+          </td>
         </tr>
       <% end %>
     </table>

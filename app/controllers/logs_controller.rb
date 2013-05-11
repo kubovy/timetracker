@@ -1,6 +1,5 @@
 class LogsController < ApplicationController
 	before_action :set_log, only: [:edit, :update, :destroy]
-	before_action :set_available_options, only: [:new, :edit]
 	before_action :set_date
 
   # GET /logs/new
@@ -108,22 +107,6 @@ class LogsController < ApplicationController
 	  cookies.permanent[:selected_date] = params[:date] unless params[:date].nil?
 		@selected_date = Date.parse cookies[:selected_date]
 	end
-
-  def set_available_options
-		@teams = Team.where :is_del
-
-		#t = Team.arel_table
-		#t[:is_deleted].eq(false).or(t[:id].in(current_user.teams.map{|t| t.id}))
-		@teams = Team.joins(:members).where(
-				"`teams`.`employer_id` = ? AND (`teams`.`is_deleted` = false OR `teams`.`id` IN (?)) AND `members`.`user_id` = ?",
-				selected_employer_id, current_user.teams, current_user.id)
-
-		@clients = []
-		@projects = Project.joins("LEFT OUTER JOIN `logs` ON `logs`.`project_id` = `projects`.`id`").where(
-				"`projects`.`employer_id` = ? AND (`projects`.`is_deleted` = false OR `logs`.`project_id` IN (?))",
-				selected_employer_id, set_log.project_id).group("`projects`.`id`")
-		@tasks = Task.all
-  end
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def log_params

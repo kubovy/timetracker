@@ -57,7 +57,7 @@
 <div class="box chart">
   <%= form_tag('', :id => 'switch_graph') do %>
     <%= button :chart, "Chart for period:" %>
-    <%= select_tag :selected_employer_id,
+    <%= select_tag :selected_chart_period,
         options_for_select([["Day", :day], ["Week", :week], ["Month", :month],
                             ["Year", :year], ["All time", :all_time]], :day),
         :onchange => ("$('#switch_graph').submit()") %>

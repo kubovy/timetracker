@@ -17,9 +17,9 @@
   <tr>
     <td><%= f.label :team_id %></td>
     <td>
-      <%= f.collection_select :team_id, @teams, :id, :name,
-            :value    => @teams.count == 1 ? @teams.first.id : nil,
-            :prompt   => @teams.count == 1 ? nil : '- Select Team -'%>
+      <%= f.collection_select :team_id, get_available_teams, :id, :name,
+            :value    => get_available_teams.count == 1 ? get_available_teams.first.id : nil,
+            :prompt   => get_available_teams.count == 1 ? nil : '- Select Team -'%>
     </td>
     <td rowspan="8" style="vertical-align: top">
       <%= mini_calendar @selected_date %>
@@ -27,15 +27,15 @@
   </tr>
   <!--<tr>-->
     <!--<td><%= f.label :client_id %></td>-->
-    <!--<td><%= f.collection_select :client_id, @clients, :id, :name, :prompt => '-' %></td>-->
+    <!--<td><%= f.collection_select :client_id, [], :id, :name, :prompt => '-' %></td>-->
   <!--</tr>-->
   <tr>
     <td><%= f.label :project_id %></td>
-    <td><%= f.collection_select :project_id, @projects, :id, :name, :prompt => '- Select Project -' %></td>
+    <td><%= f.collection_select :project_id, get_available_projects(@log), :id, :name, :prompt => '- Select Project -' %></td>
   </tr>
   <tr>
     <td><%= f.label :task_id %></td>
-    <td><%= f.collection_select :task_id, @tasks, :id, :name, :prompt => '- Select Task -' %></td>
+    <td><%= f.collection_select :task_id, get_available_tasks, :id, :name, :prompt => '- Select Task -' %></td>
   </tr>
   <tr>
     <td><%= f.label :start %></td>

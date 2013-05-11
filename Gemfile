@@ -45,3 +45,11 @@ end
 # gem 'debugger', group: [:development, :test]
 
 gem 'bootstrap-sass', '2.3.0.1'
+
+gem 'rspec-rails', :group => [:development, :test]
+gem "factory_girl_rails", :group => [:development, :test]
+gem "database_cleaner", :group => :test
+gem "email_spec", :group => :test
+gem "webrat", :group => :test
+gem "cucumber-rails", :group => :test
+gem "capybara", :group => :test

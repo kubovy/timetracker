@@ -12,12 +12,13 @@ Timetracker::Application.routes.draw do
   resources :sessions, only: [:new, :create, :destroy]
 
   root to: 'pages#home'
-  #match '/register',        to: 'users#new',             via: 'get'
   match '/login',           to: 'sessions#new',          via: 'get'
   match '/logout',          to: 'sessions#destroy',      via: 'delete'
   match '/select_employer', to: 'pages#select_employer', via: ['get', 'post']
   match '/timetable',       to: 'timetables#show',       via: 'get'
   match '/timetable',       to: 'timetables#update',     via: 'post'
+  match '/reports',         to: 'reports#configure',     via: 'get'
+  match '/reports',         to: 'reports#generate',      via: 'post'
   match '/help',            to: 'pages#help',            via: 'get'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

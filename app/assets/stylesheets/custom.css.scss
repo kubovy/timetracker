@@ -72,7 +72,64 @@ body > .container a:hover {
   background: #cccccc;
 }
 
+/* report table */
+#report-config {
+  width: 90%;
+  margin: 0 auto;
+}
+#report-config th {
+  background: none;
+}
+#report-config label {
+  display: inline-block;
+}
+
+#report-config th,
+#report-config label {
+  color: #000000;
+  font-weight: bold;
+}
+
+#report-config th {
+  padding-top: 20px;
+}
+#report-config td.name {
+  width: 50px;
+  text-align: right;
+  white-space: nowrap;
+}
+#report-config td > select,
+#report-config td > input[type="text"] {
+  width: 100%;
+}
+#report-config td.date > select {
+  width: inherit;
+}
+#report-config th[colspan="5"],
+#report-config td[colspan="5"] {
+  text-align: center;
+}
+
+#report-config table {
+  width: 90%;
+  background: #eeeeee;
+  margin: 0 auto;
+}
+
+#report-config table td {
+  text-align: left;
+  width: 25%;
+  white-space: nowrap;
+}
+
 /* boxes */
+.field.box {
+  width: 100%;
+  background: #eee;
+  padding: 5px;
+  text-align: center;
+}
+
 .container > .box {
   width: 90%;
   margin: 0 auto;
