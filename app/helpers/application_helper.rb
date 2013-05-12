@@ -8,7 +8,7 @@ module ApplicationHelper
 			minus = seconds < 0 and negative
 			hours = (seconds.abs / 3600).floor
 			minutes =  ((seconds.abs - (hours * 3600)) / 60).to_i
-			return "#{minus ? '-' : ''}#{hours}:#{minutes}"
+			return "#{minus ? '-' : ''}#{hours < 10 ? '0' : ''}#{hours}:#{minutes < 10 ? '0' : ''}#{minutes}"
 		else
 			return "0:00"
 		end
