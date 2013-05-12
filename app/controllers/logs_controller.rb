@@ -5,7 +5,10 @@ class LogsController < ApplicationController
   # GET /logs/new
   def new
     @log = Log.new
-		@logs = Log.where :date => @selected_date, :user_id => current_user.id
+		@logs = Log.where(
+        :date => @selected_date,
+        :employer_id => selected_employer_id,
+        :user_id => current_user.id)
 
 
     day_diff = (@selected_date.wday - 1 < 0 ? 6 : @selected_date.wday - 1) - 1
@@ -33,7 +36,7 @@ class LogsController < ApplicationController
 		@timetable = Hash[
 				Timetable.select("day, TIME_TO_SEC(hours) as seconds")
 					.where(:employer_id => selected_employer_id,
-				         :employee_id => current_user.id).map{|t|
+				         :user_id => current_user.id).map{|t|
 							[t.day, t.seconds / 3600]} ]
 		@holidays = Holiday.where(:employer_id => selected_employer_id).map{|holiday| holiday.date}
 
@@ -63,7 +66,7 @@ class LogsController < ApplicationController
     respond_to do |format|
       if @log.save
         format.html { redirect_to new_log_url, notice: 'Log was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @log }
+        format.json { head :no_content }
       else
         format.html { render action: 'new' }
         format.json { render json: @log.errors, status: :unprocessable_entity }
