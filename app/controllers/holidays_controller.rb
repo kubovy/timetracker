@@ -25,7 +25,7 @@ class HolidaysController < ApplicationController
         end
 		  end
 		  format.html { redirect_to holidays_url, notice: 'Holiday was successfully created.' }
-		  format.json { render action: 'show', status: :created, location: @holiday }
+		  format.json { head :no_content }
 	  end
   end
 

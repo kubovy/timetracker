@@ -38,7 +38,7 @@ class EmployersController < ApplicationController
       if @employer.save
         add_employees
         format.html { redirect_to employers_path, notice: 'Employer was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @employer }
+        format.json { head :no_content }
       else
         format.html { render action: 'new' }
         format.json { render json: @employer.errors, status: :unprocessable_entity }
