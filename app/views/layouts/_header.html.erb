@@ -32,7 +32,7 @@
                   <!--<li><%= link_to button(:logout, "Logout"), logout_path, method: "delete" %></li>-->
                 </ul>
               </li>
-              <% if current_user.is_manager_of? :anything or current_user.is_admin? %>
+              <% if current_user.is_manager? or current_user.is_manager_of?(selected_employer) %>
                 <li id="fat-menu" class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <%= button :manage, 'Manage' %> <b class="caret"></b>
