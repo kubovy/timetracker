@@ -37,6 +37,10 @@ class User < ActiveRecord::Base
     update! :is_deleted => !self[:is_deleted]
   end
 
+	def to_s
+		self[:login]
+	end
+
   private
 
   def create_remember_token

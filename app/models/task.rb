@@ -6,4 +6,8 @@ class Task < ActiveRecord::Base
   def destroy
     update! :is_deleted => !self[:is_deleted]
   end
+
+	def to_s
+		self[:name]
+	end
 end

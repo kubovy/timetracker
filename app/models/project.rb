@@ -7,5 +7,9 @@ class Project < ActiveRecord::Base
 
   def destroy
     update! :is_deleted => !self[:is_deleted]
-    end
+  end
+
+	def to_s
+		self[:name]
+	end
 end
