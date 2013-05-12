@@ -3,13 +3,13 @@
 <%= form_tag(reports_path) do %>
     <div class="field box">
       favorite report:
-      <%= select_tag 'report[load_favorite]' %>
-      <%= submit_tag "Generate" %>
-      <%= submit_tag "Delete" %>
+      <%= select_tag 'id',
+        options_from_collection_for_select(@favorites, :id, :name, @favorite.id),
+        :prompt => '- select favorite -' %>
+      <%= submit_tag "Load", :name => 'load' %>
+      <%= submit_tag "Delete", :name => 'delete' %>
     </div>
-<% end %>
 
-<%= form_tag(reports_path) do %>
     <table id="report-config">
       <tr><th colspan="5"><%= label_tag 'Select project' %></th></tr>
       <tr>
@@ -19,7 +19,7 @@
               <% i=0 %>
               <% get_available_projects.each do |project| %>
                 <td>
-                  <%= check_box_tag "report[project_ids][#{project.id}]", 1, true %>
+                  <%= check_box_tag "report[project_ids][#{project.id}]", 1, @favorite.project_ids.split(/,/).include?(project.id.to_s) || !@favorite.id %>
                   <%= label_tag "report[project_ids][#{project.id}]", project.name %>
                 </td>
                 <% i += 1 %>
@@ -40,7 +40,7 @@
               <% i=0 %>
               <% get_available_tasks.each do |task| %>
                   <td>
-                    <%= check_box_tag "report[task_ids][#{task.id}]", 1, true %>
+                    <%= check_box_tag "report[task_ids][#{task.id}]", 1, @favorite.task_ids.split(/,/).include?(task.id.to_s) || !@favorite.id %>
                     <%= label_tag "report[task_ids][#{task.id}]", task.name %>
                   </td>
                   <% i += 1 %>
@@ -67,7 +67,7 @@
               <% i=0 %>
               <% get_available_users.each do |user| %>
                   <td>
-                    <%= check_box_tag "report[user_ids][#{user.id}]", 1, true %>
+                    <%= check_box_tag "report[user_ids][#{user.id}]", 1, @favorite.user_ids.split(/,/).include?(user.id.to_s) || !@favorite.id %>
                     <%= label_tag "report[user_ids][#{user.id}]", user.login %>
                   </td>
                   <% i += 1 %>
@@ -87,29 +87,30 @@
       </tr>
       <tr>
         <td colspan="2">
-          <%= select_tag 'report[time_period]', options_for_select([
-                ['- select time period -', ''],
-                ['this month', 'this_month'],
-                ['last month', 'last_month'],
-                ['this week', 'this_week'],
-                ['last week', 'last_week']])%>
+          <%= select_tag 'report[time_period]',
+                options_for_select(Report::TIME_PERIODS.map{|k,v| [v,k]}, @favorite.time_period),
+                :prompt => '- select time period -'%>
         </td>
         <td class="separator">&nbsp;</td>
-        <td class="name"><%= label_tag 'report[start_date]', 'Start date' %>:</td>
+        <td class="name"><%= label_tag 'report[start]', 'Start date' %>:</td>
         <td class="date">
-          <%= date_select 'range', 'report[start_date]',
+          <%= date_select 'report', 'start',
                 :order  => [:day, :month, :year],
-                :prompt => '-' %>
+                :include_blank => @favorite.start,
+                :prompt => @favorite.start ? nil : '-',
+                :selected  => @favorite.start %>
         </td>
       </tr>
       <tr>
         <td colspan="2">&nbsp;</td>
         <td class="separator">&nbsp;</td>
-        <td class="name"><%= label_tag 'report[end_date]', 'End date' %>:</td>
+        <td class="name"><%= label_tag 'report[end]', 'End date' %>:</td>
         <td class="date">
-          <%= date_select 'range', 'report[end_date]',
+          <%= date_select 'report', 'end',
                   :order  => [:day, :month, :year],
-                  :prompt => '-' %>
+                  :include_blank => @favorite.end,
+                  :prompt => @favorite.end ? nil : '-',
+                  :selected  => @favorite.end %>
         </td>
       </tr>
       <tr>
@@ -120,54 +121,68 @@
           <table>
             <tr>
               <td>
-                <%= check_box_tag 'report[show_team]', 1, true %>
-                <%= label_tag 'report[]', 'team' %>
+                <%= check_box_tag 'report[fields][user]', 1,  @favorite.fields.split(/,/).include?('user') || !@favorite.id %>
+                <%= label_tag 'report[fields][user]', 'user' %>
               </td>
               <td>
-                <%= check_box_tag 'report[show_start]', 1, true %>
-                <%= label_tag 'report[]', 'start' %>
+                <%= check_box_tag 'report[fields][start]', 1, @favorite.fields.split(/,/).include?('start') || !@favorite.id %>
+                <%= label_tag 'report[fields][start]', 'start' %>
               </td>
               <td>
-                <%= check_box_tag 'report[show_description]', 1, true %>
-                <%= label_tag 'report[]', 'description' %>
+                <%= check_box_tag 'report[fields][description]', 1, @favorite.fields.split(/,/).include?('description') || !@favorite.id %>
+                <%= label_tag 'report[fields][description]', 'description' %>
               </td>
               <td>
-                <%= check_box_tag 'report[show_idle]', 1, true %>
-                <%= label_tag 'report[]', 'idle' %>
+                <%= check_box_tag 'report[fields][todo]', 1, @favorite.fields.split(/,/).include?('todo') || !@favorite.id %>
+                <%= label_tag 'report[fields][todo]', 'hours to do' %>
               </td>
             </tr>
             <tr>
               <td>
-                <%= check_box_tag 'report[show_project]', 1, true %>
-                <%= label_tag 'report[]', 'project' %>
+                <%= check_box_tag 'report[fields][team]', 1,  @favorite.fields.split(/,/).include?('team') || !@favorite.id %>
+                <%= label_tag 'report[fields][team]', 'team' %>
               </td>
               <td>
-                <%= check_box_tag 'report[show_finish]', 1, true %>
-                <%= label_tag 'report[]', 'finish' %>
+                <%= check_box_tag 'report[fields][finish]', 1, @favorite.fields.split(/,/).include?('finish') || !@favorite.id %>
+                <%= label_tag 'report[fields][finish]', 'finish' %>
               </td>
-              <td>
-                <%= check_box_tag 'report[show_billable]', 1, true %>
-                <%= label_tag 'report[]', 'billable' %>
-              </td>
-              <td>
-                <%= check_box_tag 'report[show_remaining]', 1, true %>
-                <%= label_tag 'report[]', 'remaining time' %>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <%= check_box_tag 'report[show_task]', 1, true %>
-                <%= label_tag 'report[]', 'task' %>
-              </td>
-              <td>
-                <%= check_box_tag 'report[show_duration]', 1, true %>
-                <%= label_tag 'report[]', 'duration' %>
-              </td>
+              <!--<td>-->
+                <!--<%= check_box_tag 'report[fields][billable]', 1, @favorite.fields.split(/,/).include?('billable') || !@favorite.id %>-->
+                <!--<%= label_tag 'report[fields][billable]', 'billable' %>-->
+              <!--</td>-->
               <td>&nbsp;</td>
               <td>
-                <%= check_box_tag 'report[show_overtime]', 1, true %>
-                <%= label_tag 'report[]', 'overtime' %>
+                <%= check_box_tag 'report[fields][remaining]', 1, @favorite.fields.split(/,/).include?('remaining') || !@favorite.id %>
+                <%= label_tag 'report[fields][remaining]', 'remaining time' %>
               </td>
+            </tr>
+            <tr>
+              <td>
+                <%= check_box_tag 'report[fields][project]', 1, @favorite.fields.split(/,/).include?('project') || !@favorite.id %>
+                <%= label_tag 'report[fields][project]', 'project' %>
+              </td>
+              <td>
+                <%= check_box_tag 'report[fields][duration]', 1, @favorite.fields.split(/,/).include?('duration') || !@favorite.id %>
+                <%= label_tag 'report[fields][duration]', 'duration' %>
+              </td>
+              <!--<td>-->
+                <!--<%= check_box_tag 'report[fields][idle]', 1, @favorite.fields.split(/,/).include?('idle') || !@favorite.id %>-->
+                <!--<%= label_tag 'report[fields][idle]', 'idle' %>-->
+              <!--</td>-->
+              <td>&nbsp;</td>
+              <td>
+                <%= check_box_tag 'report[fields][overtime]', 1, @favorite.fields.split(/,/).include?('overtime') || !@favorite.id %>
+                <%= label_tag 'report[fields][overtime]', 'overtime' %>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <%= check_box_tag 'report[fields][task]', 1, @favorite.fields.split(/,/).include?('task') || !@favorite.id %>
+                <%= label_tag 'report[fields][task]', 'task' %>
+              </td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
             </tr>
           </table>
         </td>
@@ -179,31 +194,31 @@
       </tr>
       <tr>
         <td colspan="2">
-          <%= select_tag 'report[group_by]', options_for_select([
-              ['- no grouping -', ''],
-              ['user', 'user'],
-              ['team', 'team'],
-              ['project', 'project'],
-              ['task', 'task']]) %>
+          <%= select_tag 'report[group_by]',
+                options_for_select(Report::GROUPING_BY.map{|k,v| [v, k]}, @favorite.group_by),
+                :prompt => '- no grouping -'%>
         </td>
         <td class="separator">&nbsp;</td>
         <td colspan="2">
-          <%= select_tag 'report[group_per]', options_for_select([
-              ['- no grouping -', ''],
-              ['month', 'month'],
-              ['week', 'week'],
-              ['day', 'day']]) %>
+          <%= select_tag 'report[group_per]',
+                options_for_select(Report::GROUPING_PER.map{|k,v| [v, k]}, @favorite.group_per),
+                :prompt => '- no grouping -'%>
         </td>
       </tr>
     </table>
 
     <div class="field box">
       save as favorite:
-      <%= text_field_tag 'report[save_favorite]' %>
-      <%= submit_tag "Save" %>
+      <%= text_field_tag 'report[name]', @favorite.name %>
+      <% unless @favorite.id %>
+         <%= submit_tag "Save", :name => 'create' %>
+      <% else %>
+         <%= submit_tag "Create", :name => 'create' %>
+         <%= submit_tag "Update", :name => 'update' %>
+      <% end %>
     </div>
 
     <div class="actions">
-      <%= submit_tag "Generate" %>
+      <%= submit_tag "Generate", :name => 'generate' %>
     </div>
 <% end %>

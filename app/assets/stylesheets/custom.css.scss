@@ -61,6 +61,7 @@ body > .container a:hover {
 
 .container table td {
   padding: 0px 10px;
+  white-space: nowrap;
 }
 
 .container > table th.buttons {
@@ -120,6 +121,14 @@ body > .container a:hover {
   text-align: left;
   width: 25%;
   white-space: nowrap;
+}
+
+table.summary th {
+  color: #333;
+  background: none;
+  font-weight: bold;
+  text-align: right;
+  padding: 0;
 }
 
 /* boxes */
