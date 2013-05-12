@@ -1,0 +1,62 @@
+<h1>Report</h1>
+
+<strong><%= @begin %> - <%= @end %></strong>
+
+<table>
+  <% @log.each do |group, data| %>
+    <% unless group[:per].nil? and group[:by].nil? %>
+      <tr>
+        <th colspan="<%= @columns %>">
+          <% unless group[:per].nil? %>
+            <%= group[:per][0].strftime("%B %Y") if @per_type == 1 %>
+            <%= group[:per][0].strftime("Week %V, %Y") if @per_type == 2 %>
+            <%= group[:per][0].strftime("%d. %b %Y") if @per_type == 3 %>
+          <% end %>
+          <%= "(#{@by_type}: #{group[:by]})" unless group[:by].nil? %>
+        </th>
+      </tr>
+    <% end %>
+    <tr>
+      <%= content_tag(:th, 'Date') %>
+      <%= content_tag(:th, 'User') if @fields.include? 'user' %>
+      <%= content_tag(:th, 'Project') if @fields.include? 'project' %>
+      <%= content_tag(:th, 'Team') if @fields.include? 'team' %>
+      <%= content_tag(:th, 'Task') if @fields.include? 'task' %>
+      <%= content_tag(:th, 'Start') if @fields.include? 'start' %>
+      <%= content_tag(:th, 'Finish') if @fields.include? 'finish' %>
+      <%= content_tag(:th, 'Duration') if @fields.include? 'duration' %>
+      <%= content_tag(:th, 'Description') if @fields.include? 'description' %>
+    </tr>
+    <% data[:records].each do |record| %>
+      <tr>
+        <%= content_tag(:td, record.date.strftime("%d.%m.%Y")) %>
+        <%= content_tag(:td, record.user) if @fields.include? 'user' %>
+        <%= content_tag(:td, record.project) if @fields.include? 'project' %>
+        <%= content_tag(:td, record.team) if @fields.include? 'team' %>
+        <%= content_tag(:td, record.task) if @fields.include? 'task' %>
+        <%= content_tag(:td, record.start.strftime("%H:%M")) if @fields.include? 'start' %>
+        <%= content_tag(:td, record.finish.strftime("%H:%M")) if @fields.include? 'finish' %>
+        <%= content_tag(:td, record.duration.strftime("%H:%M")) if @fields.include? 'duration' %>
+        <%= content_tag(:td, record.description) if @fields.include? 'description' %>
+      </tr>
+    <% end %>
+    <tr>
+      <td colspan="<%= @columns %>">
+        <table class="summary">
+          <tr><th>Start date:</th><td><%= data[:start].strftime("%d.%m.%Y") %></td></tr>
+          <tr><th>End date:</th><td><%= data[:end].strftime("%d.%m.%Y") %></td></tr>
+          <tr><th>Total:</th><td><%= format_time_in_seconds data[:total] %></td></tr>
+          <% if @fields.include?('todo') and not data[:todo] == 0 %>
+            <tr><th>Hours to do:</th><td><%= format_time_in_seconds data[:todo] %></td></tr>
+          <% end %>
+          <% if @fields.include?('remaining') and not data[:remaining] == 0 %>
+            <tr><th>Remaining hours:</th><td><%= format_time_in_seconds data[:remaining] %></td></tr>
+          <% end %>
+          <% if @fields.include?('overtime') and not data[:overtime] == 0 %>
+            <tr><th>Overtime:</th><td><%= format_time_in_seconds data[:overtime] %></td></tr>
+          <% end %>
+        </table>
+      </td>
+    </tr>
+  <% end %>
+</table>
