@@ -28,13 +28,13 @@ class ProjectsController < ApplicationController
   # POST /projects
   # POST /projects.json
   def create
-    project_params[:owner_id] = current_user[:id] if project_params[:owner_id].nil? or not current_user.is_admin?
+    project_params[:owner_id] = current_user.id if project_params[:owner_id].nil? or not current_user.is_admin?
     @project = Project.new(project_params)
 
     respond_to do |format|
       if @project.save
         format.html { redirect_to projects_url, notice: 'Project was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @project }
+        format.json { head :no_content }
       else
         format.html { render action: 'new' }
         format.json { render json: @project.errors, status: :unprocessable_entity }
@@ -76,6 +76,6 @@ class ProjectsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def project_params
-      params.require(:project).permit(:employer_id, :name, :description, :owner_id)
+      @project_params ||= params.require(:project).permit(:employer_id, :name, :description, :owner_id)
     end
 end
