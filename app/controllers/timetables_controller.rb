@@ -3,7 +3,7 @@ class TimetablesController < ApplicationController
   # GET /timetable
   # GET /timetable.json
   def show
-    @timetable = Timetable.where :employer_id => selected_employer.id, :employee_id => current_user.id
+    @timetable = Timetable.where :employer_id => selected_employer.id, :user_id => current_user.id
   end
 
   # PATCH/PUT /timetable
@@ -13,7 +13,7 @@ class TimetablesController < ApplicationController
 			params[:timetable].each do |day, hours|
 				existing = Timetable.first :conditions => {
 						:employer_id => selected_employer_id,
-						:employee_id => current_user.id,
+						:user_id => current_user.id,
 				    :day => day
 				}
 
@@ -22,7 +22,7 @@ class TimetablesController < ApplicationController
 					success = existing.delete if hours.empty?
 				elsif not hours.empty? then
 					t = Timetable.new :employer_id => selected_employer_id,
-						:employee_id => current_user.id, :day => day, :hours => hours
+						:user_id => current_user.id, :day => day, :hours => hours
 					success = t.save
 			  else
 					success = true

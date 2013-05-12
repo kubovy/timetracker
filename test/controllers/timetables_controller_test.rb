@@ -18,7 +18,7 @@ class TimetablesControllerTest < ActionController::TestCase
 
   test "should create timetable" do
     assert_difference('Timetable.count') do
-      post :create, timetable: { day: @timetable.day, employee_id: @timetable.employee_id, employer_id: @timetable.employer_id, hours: @timetable.hours }
+      post :create, timetable: { day: @timetable.day, user_id: @timetable.user_id, employer_id: @timetable.employer_id, hours: @timetable.hours }
     end
 
     assert_redirected_to timetable_path(assigns(:timetable))
@@ -35,7 +35,7 @@ class TimetablesControllerTest < ActionController::TestCase
   end
 
   test "should update timetable" do
-    patch :update, id: @timetable, timetable: { day: @timetable.day, employee_id: @timetable.employee_id, employer_id: @timetable.employer_id, hours: @timetable.hours }
+    patch :update, id: @timetable, timetable: { day: @timetable.day, user_id: @timetable.user_id, employer_id: @timetable.employer_id, hours: @timetable.hours }
     assert_redirected_to timetable_path(assigns(:timetable))
   end
 

@@ -977,13 +977,13 @@ DROP TABLE IF EXISTS `timetables`;
 CREATE TABLE `timetables` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `employer_id` int(11) NOT NULL,
-  `employee_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `day` int(11) NOT NULL,
   `hours` time NOT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `index_timetables_on_employer_id_and_employee_id_and_day` (`employer_id`,`employee_id`,`day`)
+  UNIQUE KEY `index_timetables_on_employer_id_and_user_id_and_day` (`employer_id`,`user_id`,`day`)
 ) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
