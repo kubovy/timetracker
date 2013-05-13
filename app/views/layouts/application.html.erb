@@ -2,8 +2,11 @@
 <html>
 <head>
   <title>Timetracker</title>
-  <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
-  <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'jquery-1.9.1.min.js' %>
+  <%= javascript_include_tag 'raphael-min', 'g.raphael-min', 'g.pie-min', 'charset' => 'utf8' %>
+  <!-- 'g.bar-min', 'g.dot-min', 'g.line-min' -->
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
 </head>
 <body>

@@ -55,11 +55,57 @@
 </table>
 
 <div class="box chart">
-  <%= form_tag('', :id => 'switch_graph') do %>
+  <%= form_tag('', :id => 'switch_graph', :method => :get) do %>
     <%= button :chart, "Chart for period:" %>
-    <%= select_tag :selected_chart_period,
+    <%= select_tag :chart_period,
         options_for_select([["Day", :day], ["Week", :week], ["Month", :month],
-                            ["Year", :year], ["All time", :all_time]], :day),
+                            ["Year", :year], ["All time", :all_time]], @chart_period),
         :onchange => ("$('#switch_graph').submit()") %>
   <% end %>
 </div>
+
+<div class="charts">
+    <div id="pie-holder-projects"></div>
+    <div id="pie-holder-tasks"></div>
+</div>
+
+<%= javascript_tag do %>
+    function drawPie(holder_id, title, data, labels) {
+        var r = Raphael(holder_id),
+            pie = r.piechart(400, 240, 100, data, {
+                legend: labels,
+                legendpos: "west"});
+
+        pie.each(function(){
+            this.sector.scale(0, 0, this.cx, this.cy);
+            this.sector.animate({ transform: 's1 1 ' + this.cx + ' ' + this.cy }, 1000, "bounce");
+        });
+
+        r.text(400, 100, title).attr({ font: "20px sans-serif" });
+        pie.hover(function () {
+            this.sector.stop();
+            this.sector.animate({ transform: 's1.1 1.1 ' + this.cx + ' ' + this.cy }, 500, "bounce");
+
+            if (this.label) {
+                this.label[0].stop();
+                this.label[0].attr({ r: 7.5 });
+                this.label[1].attr({ "font-weight": 800 });
+            }
+        }, function () {
+            this.sector.animate({ transform: 's1 1 ' + this.cx + ' ' + this.cy }, 500, "bounce");
+
+            if (this.label) {
+                this.label[0].animate({ r: 5 }, 500, "bounce");
+                this.label[1].attr({ "font-weight": 400 });
+            }
+        });
+    };
+
+    drawPie("pie-holder-projects", "Projects",
+        [<%= @stats[:project].map{|s| s[:count]}.join(',') %>],
+        [<%= @stats[:project].map{|s| "\"%%.%% #{s[:project]}\"".html_safe }.join(',').html_safe %>]);
+    drawPie("pie-holder-tasks", "Tasks",
+        [<%= @stats[:task].map{|s| s[:count]}.join(',') %>],
+        [<%= @stats[:task].map{|s| "\"%%.%% #{s[:task]}\"".html_safe }.join(',').html_safe %>]);
+
+<% end %>

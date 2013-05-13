@@ -1,6 +1,6 @@
 class LogsController < ApplicationController
 	before_action :set_log, only: [:edit, :update, :destroy]
-	before_action :set_date
+	before_action :set_data, only: [:new]
 
   # GET /logs/new
   def new
@@ -105,10 +105,47 @@ class LogsController < ApplicationController
     @log ||= params[:id].nil? ? Log.new : Log.find(params[:id])
   end
 
-	def set_date
-	  cookies.permanent[:selected_date] ||= Date.today.strftime("%Y-%m-%d")
-	  cookies.permanent[:selected_date] = params[:date] unless params[:date].nil?
+	def set_data
+		cookies.permanent[:selected_date] ||= Date.today.strftime("%Y-%m-%d")
+		cookies.permanent[:selected_date] = params[:date] unless params[:date].nil?
 		@selected_date = Date.parse cookies[:selected_date]
+
+		cookies.permanent[:chart_period] ||= :day
+		cookies.permanent[:chart_period] = params[:chart_period] unless params[:chart_period].nil?
+		@chart_period = cookies[:chart_period]
+
+		period = (cookies[:chart_period] || :day).to_sym
+
+		date_begin = @selected_date if period == :day
+		date_end = @selected_date if period == :day
+
+		date_begin = @selected_date.prev_day(@selected_date.wday == 0 ? 6 : @selected_date.wday - 1) if period == :week
+		date_end   = date_begin.next_day(6) if period == :week
+
+		date_begin = Date.new(@selected_date.year, @selected_date.month, 1) if period == :month
+		date_end = date_begin.next_month.prev_day if period == :month
+
+		date_begin = Date.new(@selected_date.year, 1, 1) if period == :year
+		date_end = date_begin.next_year.prev_day if period == :year
+
+		if period == :all_time
+			where = 'user_id = ? AND employer_id = ? AND (date >= ? OR date <= ? OR true)'
+		else
+			where = 'user_id = ? AND employer_id = ? AND date >= ? AND date <= ?'
+		end
+
+		@stats = {
+				:project =>  Log
+						.select('count(id) as count, project_id')
+						.where(where, current_user.id, selected_employer_id, date_begin, date_end)
+						.group(:project_id).map{ |s|
+								{:project => Project.find(s[:project_id]).name, :count => s[:count]}},
+				:task =>  Log
+						.select("count(id) as count, task_id")
+						.where(where, current_user.id, selected_employer_id, date_begin, date_end)
+						.group(:task_id).map{ |s|
+								{:task => Task.find(s[:task_id]).name, :count => s[:count]}},
+		}
 	end
 
   # Never trust parameters from the scary internet, only allow the white list through.
@@ -118,5 +155,4 @@ class LogsController < ApplicationController
 		    :employer_id => selected_employer_id,
         :user_id => current_user.id })
   end
-
 end
