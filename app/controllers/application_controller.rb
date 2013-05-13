@@ -7,6 +7,30 @@ class ApplicationController < ActionController::Base
 
   before_action :set_available_employers
   before_action :set_cookies_to_user_model
+  before_action :force_login_using_basig_auth
+
+  protected
+
+  def do_login(login)
+    user = User.find_by(login: login)
+    unless user
+      user = User.new(login: login)
+      user[:is_admin] = true if User.count == 0
+
+      unless user.save
+        flash[:error] = 'Error while login attempt.'
+	 return false
+      end
+    end
+
+    login user
+    return true
+  end
+
+  def do_logout
+    logout
+    force_login_using_basig_auth
+  end
 
   private
 
@@ -28,7 +52,11 @@ class ApplicationController < ActionController::Base
 		end
   end
 
-	def set_cookies_to_user_model
-		User.cookies = cookies
-	end
+  def set_cookies_to_user_model
+    User.cookies = cookies
+  end
+
+  def force_login_using_basig_auth
+    do_login ActionController::HttpAuthentication::Basic::user_name_and_password(request)[0] if not logged_in?
+  end
 end

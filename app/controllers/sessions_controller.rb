@@ -1,25 +1,15 @@
 class SessionsController < ApplicationController
   def new
+	redirect_to root_path if logged_in?
   end
 
   def create
-    user = User.find_by(login: params[:session][:login])
-    unless user
-      user = User.new(login: params[:session][:login])
-      user[:is_admin] = true if User.count == 0
-
-      unless user.save
-        flash[:error] = "Welcome to the Sample App!"
-        render 'new'
-      end
-    end
-
-    login user
+    do_login params[:session][:login]
     redirect_to root_path
   end
 
   def destroy
-    logout
+    do_logout
     redirect_to root_path
   end
 end
