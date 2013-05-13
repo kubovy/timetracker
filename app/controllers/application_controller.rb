@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
 
   before_action :set_available_employers
   before_action :set_cookies_to_user_model
-  before_action :force_login_using_basig_auth
+  before_action :force_login_using_basic_auth
 
   protected
 
@@ -29,7 +29,7 @@ class ApplicationController < ActionController::Base
 
   def do_logout
     logout
-    force_login_using_basig_auth
+    force_login_using_basic_auth
   end
 
   private
@@ -56,7 +56,9 @@ class ApplicationController < ActionController::Base
     User.cookies = cookies
   end
 
-  def force_login_using_basig_auth
-    do_login ActionController::HttpAuthentication::Basic::user_name_and_password(request)[0] if not logged_in?
+  def force_login_using_basic_auth
+		unless request.authorization.nil? then
+				do_login ActionController::HttpAuthentication::Basic::user_name_and_password(request)[0] if not logged_in?
+		end
   end
 end
