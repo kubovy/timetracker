@@ -32,10 +32,10 @@ test: &test
 production:
   adapter: mysql2
   encoding: utf8
-  database: poterion_timetracker_new
+  database: timetracker
   pool: 5
-  username: poterion
-  password: AXqpwXB9uDN2Jw7w
+  username: timetracker
+  password: timetracker
   host: localhost
 
 cucumber:
