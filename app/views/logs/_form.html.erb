@@ -42,8 +42,20 @@
     <td><%= f.text_field :start, :value => @log.start.nil? ? nil : @log.start.strftime("%H:%M") %></td>
   </tr>
   <tr>
+    <td><%= f.label :finish %></td>
+    <td>
+      <%= f.text_field :finish,
+        :value => @log.finish.nil? ? nil : @log.finish.strftime("%H:%M"),
+        :onclick => '$("#log_duration").attr("disabled", true)' %>
+    </td>
+  </tr>
+  <tr>
     <td><%= f.label :duration %></td>
-    <td><%= f.text_field :duration, :value => @log.duration.nil? ? nil : @log.duration.strftime("%H:%M")  %></td>
+    <td>
+      <%= f.text_field :duration,
+        :value => @log.duration.nil? ? nil : @log.duration.strftime("%H:%M"),
+        :onclick => '$("#log_finish").attr("disabled", true)'%>
+    </td>
   </tr>
   <tr>
     <td><%= f.label :description %></td>
