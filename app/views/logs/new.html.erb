@@ -64,15 +64,15 @@
   <% end %>
 </div>
 
-<div class="charts">
-    <div id="pie-holder-projects"></div>
-    <div id="pie-holder-tasks"></div>
+<div id="charts">
+  <div class="chart-outer"><div id="pie-holder-projects"></div></div>
+  <div class="chart-outer"><div id="pie-holder-tasks"></div></div>
 </div>
 
 <%= javascript_tag do %>
     function drawPie(holder_id, title, data, labels) {
         var r = Raphael(holder_id),
-            pie = r.piechart(400, 240, 100, data, {
+            pie = r.piechart(300, 130, 100, data, {
                 legend: labels,
                 legendpos: "west"});
 
@@ -81,7 +81,7 @@
             this.sector.animate({ transform: 's1 1 ' + this.cx + ' ' + this.cy }, 1000, "bounce");
         });
 
-        r.text(400, 100, title).attr({ font: "20px sans-serif" });
+        r.text(300, 10, title).attr({ font: "20px sans-serif" });
         pie.hover(function () {
             this.sector.stop();
             this.sector.animate({ transform: 's1.1 1.1 ' + this.cx + ' ' + this.cy }, 500, "bounce");
