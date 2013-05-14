@@ -57,7 +57,8 @@ class ApplicationController < ActionController::Base
   end
 
   def force_login_using_basic_auth
-		unless request.authorization.nil? then
+		@basic_auth = !request.authorization.nil?
+		if @basic_auth then
 				do_login ActionController::HttpAuthentication::Basic::user_name_and_password(request)[0] if not logged_in?
 		end
   end
